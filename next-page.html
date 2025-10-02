@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>444</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&display=swap" rel="stylesheet"/>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'MS Sans Serif', 'Microsoft Sans Serif', sans-serif;
+      overflow: hidden;
+      background-image: url('bp.png');
+      background-repeat: repeat;
+      background-size: calc(100vw / 8) calc(100vh / 5);
+      height: 100vh;
+      position: relative;
+      cursor: url(http://www.rw-designer.com/cursor-extern.php?id=81122), auto;
+    }
+
+    /* Text overlay grid of "444" */
+    .text-overlay {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+    }
+    .text-tile {
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Lora', serif;
+      font-size: clamp(20px, 5vw, 40px);
+      color:#ffde59; font-weight:bold;
+      animation: fadeInOut 1.5s ease-in-out infinite;
+      padding-top:20%;
+    }
+    @keyframes fadeInOut { 0%,100%{opacity:0} 50%{opacity:1} }
+
+    /* Taskbar */
+    .taskbar {
+      position: fixed; left:0; right:0; bottom:0; height:60px;
+      background:#c0c0c0; border-top:2px solid #ffffff;
+      display:flex; align-items:center; padding:0 4px;
+      box-shadow:0 -2px 4px rgba(0,0,0,.2); z-index:1000;
+    }
+    .start-button {
+      height:42px; padding:0 20px; background:#c0c0c0; border:2px outset #ffffff;
+      font-weight:bold; font-size:18px; display:flex; gap:8px; align-items:center; cursor:pointer;
+    }
+    .start-button:active { border-style: inset; }
+    .start-icon { width:14px; height:14px; background:#008000; border-radius:50%; }
+    .clock {
+      margin-left:auto; padding:0 24px; height:40px; display:flex; align-items:center;
+      background:#c0c0c0; border:2px inset #808080; font-size:13px;
+    }
+
+    /* Window base (Win95 style) */
+    .window {
+      position:absolute; background:#c0c0c0; border:2px outset #ffffff;
+      box-shadow:2px 2px 8px rgba(0,0,0,.3);
+      min-width:300px;
+    }
+    .window-titlebar {
+      background:linear-gradient(90deg, #000080, #1084d0);
+      color:#fff; padding:4px 6px; display:flex; align-items:center; justify-content:space-between;
+      font-weight:bold; font-size:13px; cursor:move; user-select:none;
+    }
+    .window-controls { display:flex; gap:2px; }
+    .window-button {
+      width:18px; height:18px; background:#c0c0c0; border:2px outset #ffffff;
+      display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; cursor:pointer;
+      line-height:1;
+    }
+    .window-button:active { border-style: inset; }
+    .window-content { padding:16px; background:#c0c0c0; }
+    .window.active { box-shadow: 2px 2px 10px rgba(0,0,0,.45); }
+
+    /* Desktop icons */
+    .icon {
+      position:absolute; width:120px; display:flex; flex-direction:column; align-items:center; gap:4px;
+      cursor:pointer; padding:8px; z-index:2;
+    }
+    .icon:hover { background: rgba(0,0,128,0.2); }
+    .icon-image { width:100px; height:100px; display:flex; align-items:center; justify-content:center; }
+    .icon-image img { width:100%; height:100%; object-fit:contain; }
+    .icon-label {
+      color:#fff; font-size:26px; text-align:center; font-weight:bold;
+      text-shadow:1px 1px 2px rgba(0,0,0,.8);
+    }
+
+/* Narrative window */
+.window-narrative {
+  width: 680px;
+  max-width: 95vw;
+  top: 120px;
+  left: 200px;
+}
+.window-content.narrative {
+  background: #c0c0c0;
+  padding: 0;   /* remove padding so image fits flush */
+  text-align: center;
+}
+.window-content.narrative img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- GIF Viewer window ---- */
+.window-content.gif-view {
+  background:#c0c0c0;
+  padding: 26px 28px 34px;
+
+  display: flex;
+  flex-direction: column;   /* stack elements vertically */
+  align-items: center;      /* center horizontally */
+  justify-content: flex-start; /* keep top-to-bottom flow */
+  text-align: center;       /* center text */
+}
+
+.gif-title {
+  font-family: 'Lora', serif;
+  font-weight: 800;
+  font-size: clamp(26px, 4.2vw, 50px);
+  color: #1e39c5;
+  text-shadow: 0 2px 0 #ffffff, 0 0 2px #001a66;
+  margin-bottom: 12px;
+   width: 100%;        /* span whole window content */
+  text-align: center;
+}
+
+.gif-desc {
+  max-width: 420px;
+  margin: 0 0 20px;
+  font-size: 22px;
+  line-height: 1.45;
+  font-weight: 700;
+  margin-right: 26px;
+   width: 110%;        /* span whole window content */
+  text-align: center;
+  color: #111;
+}
+
+.gif-frame {
+  border: 2px solid #ffffff;
+  box-shadow: 2px 2px 0 #000;
+  background:#000;
+}
+.gif-frame video {
+  display: block;
+  max-width: 460px;
+  width: 100%;
+  height: auto;
+}
+
+
+
+
+    /* Mouse trail */
+    .trail {
+      position:fixed; width:8px; height:8px; background:#ffde59; border-radius:50%;
+      pointer-events:none; z-index:9999; opacity:0; animation: trailFade .6s ease-out forwards;
+    }
+    @keyframes trailFade { 0%{opacity:1; transform:scale(1)} 100%{opacity:0; transform:scale(.3)} }
+
+    /* ---- About $444 window look ---- */
+    .window-444 {
+      width: 600px;               /* wider */
+      max-width: 95vw;
+      top: 100px;
+      left: 160px;
+    }
+    .window-titlebar .title-text { text-transform:uppercase; letter-spacing:.5px; }
+
+    .window-content.about-444 {
+      background:#c0c0c0;
+      text-align:center;
+      padding:28px 32px 36px;     /* taller padding => longer/taller window */
+    }
+    .about-444 .pill-logo {
+      width:180px; height:180px; margin:8px auto 20px; border-radius:50%;
+      overflow:hidden; border:4px solid #0a2b7a; box-shadow:0 0 0 2px #001a66 inset;
+    }
+    .about-444 .pill-logo img { width:100%; height:100%; object-fit:cover; }
+    .about-444 .headline {
+      font-family:'Lora', serif; font-weight:700;
+      font-size: clamp(26px, 4.2vw, 40px);
+      color:#1e39c5;
+       width: 100%;        /* span whole window content */
+  text-align: center;
+      text-shadow:0 2px 0 #ffffff, 0 0 2px #001a66;
+      line-height:1.15; margin:10px 0 18px;
+    }
+    .about-444 .subhead {
+      font-family:'MS Sans Serif','Microsoft Sans Serif',sans-serif;
+       width: 100%;        /* span whole window content */
+  text-align: center;
+      font-weight:900; font-size:clamp(30px,3.2vw,28px); color:#111; margin:4px 0 18px;
+    }
+    .about-444 .tagline { font-size:clamp(18px,2.4vw,16px); color:#000000; margin-bottom:18px; }
+    .about-444 .tagline em { font-style:bold; opacity:1; }
+    .about-444 .tagline .blue { color:#1e39c5; text-decoration:none; font-weight:700; }
+
+    .about-444 .ca {
+      font-size: 20px;
+      margin: 6px 0 18px;
+      color: #111;
+      user-select: all;
+      font-weight: 700; 
+      font-family: 'MS Sans Serif','Microsoft Sans Serif',sans-serif, ;
+    }
+
+    .btn-small {
+  padding:6px 4px;
+  font-size:4px;
+  min-width: auto;  /* remove any forced width */
+}
+
+
+    /* Win95 button style */
+    .btn95 {
+  display: inline-flex;          /* use flexbox instead of inline-block */
+  align-items: center;           /* vertical center */
+  justify-content: center;       /* horizontal center */
+  padding: 10px 22px;
+  margin: 8px 0;
+  background: #cfcfcf;
+  border: 2px outset #ffffff;
+  box-shadow: 2px 2px 0 #000;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 16px;
+  min-width: auto;               /* don’t force width */
+  text-align: center;            /* ensures text alignment */
+}
+
+    .btn95:active {
+      border-style: inset;
+      transform: translate(1px,1px);
+      box-shadow: 1px 1px 0 #000;
+    }
+    .btn-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+    .btn-row .btn-wide { min-width: 40px; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Text Overlay Grid -->
+  <div class="text-overlay">
+    <!-- 40 tiles -->
+    <div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div>
+    <div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div>
+    <div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div>
+    <div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div>
+    <div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div><div class="text-tile">444</div>
+  </div>
+
+  <!-- Desktop Icons -->
+  <div class="icon" id="icon-about" style="top: 150px; left: 30px;">
+    <div class="icon-image"><img src="4mem.png" alt="Icon"></div>
+    <div class="icon-label">About<br>$444</div>
+  </div>
+
+  <div class="icon" id="icon-narrative" style="top: 360px; left: 30px;">
+    <div class="icon-image"><img src="4mem.png" alt="Icon"></div>
+    <div class="icon-label">The<br>Narrative</div>
+  </div>
+
+  <div class="icon" id="icon-gif" style="top: 550px; left: 30px;">
+    <div class="icon-image"><img src="4mem.png" alt="Icon"></div>
+    <div class="icon-label">444.gif</div>
+  </div>
+
+  <div class="icon" id="icon-buy" style="top: 710px; left: 30px;">
+    <div class="icon-image"><img src="4mem.png" alt="Icon"></div>
+    <div class="icon-label">Buy on<br>Four.Meme!</div>
+  </div>
+
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <div class="start-button">
+      <div class="start-icon"></div> Return
+    </div>
+    <div class="clock" id="clock">04:10 PM</div>
+  </div>
+
+  <script>
+    // ====== CONFIG: URLs & Contract (replace later) ======
+    const CONTRACT_ADDRESS = 'N/A';
+    const URL_PUMP   = '#';   // replace with https://pump.fun/...
+    const URL_CHART  = '#';   // replace with DexScreener/GMGN/GeckoTerminal link
+    const URL_TWIT   = '#';   // replace with X/Twitter community link
+
+    // ----- Clock -----
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours() % 12 || 12;
+      const m = now.getMinutes().toString().padStart(2,'0');
+      const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+      document.getElementById('clock').textContent = `${h}:${m} ${ampm}`;
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    // ----- Mouse trail -----
+    document.addEventListener('mousemove', (e) => {
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.left = e.pageX + 'px';
+      trail.style.top  = e.pageY + 'px';
+      document.body.appendChild(trail);
+      setTimeout(() => trail.remove(), 600);
+    });
+
+    // ---------- Window framework ----------
+    let zTop = 2000;
+    function bringToFront(el) {
+      zTop += 1; el.style.zIndex = zTop;
+      document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function makeDraggable(winEl, handleEl) {
+      let ox=0, oy=0, dragging=false;
+
+      const onDown = (e) => {
+        dragging = true; bringToFront(winEl);
+        const p = ('touches' in e) ? e.touches[0] : e;
+        const rect = winEl.getBoundingClientRect();
+        ox = p.clientX - rect.left; oy = p.clientY - rect.top;
+        e.preventDefault();
+      };
+
+      const onMove = (e) => {
+        if (!dragging) return;
+        const p = ('touches' in e) ? e.touches[0] : e;
+        let x = p.clientX - ox, y = p.clientY - oy;
+
+        // clamp inside viewport (leave taskbar space)
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const rect = winEl.getBoundingClientRect();
+        x = Math.min(Math.max(x, -rect.width + 80), vw - 80);
+        y = Math.min(Math.max(y, 0), vh - 60 - 40);
+
+        winEl.style.left = x + 'px';
+        winEl.style.top  = y + 'px';
+      };
+
+      const onUp = () => dragging = false;
+
+      handleEl.addEventListener('mousedown', onDown);
+      handleEl.addEventListener('touchstart', onDown, {passive:false});
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('touchmove', onMove, {passive:false});
+      window.addEventListener('mouseup', onUp);
+      window.addEventListener('touchend', onUp);
+    }
+
+    function createWin95Window({ title = 'Window', contentHTML = '', x = 160, y = 120, classes = '' }) {
+      const win = document.createElement('div');
+      win.className = `window ${classes}`;
+      win.style.top = y + 'px';
+      win.style.left = x + 'px';
+      bringToFront(win);
+
+      win.innerHTML = `
+        <div class="window-titlebar">
+          <span class="title-text">${title}</span>
+          <div class="window-controls">
+            <div class="window-button" title="Close" data-act="close">×</div>
+          </div>
+        </div>
+        <div class="window-content">${contentHTML}</div>
+      `;
+
+      document.body.appendChild(win);
+
+      const titlebar = win.querySelector('.window-titlebar');
+      makeDraggable(win, titlebar);
+      win.addEventListener('mousedown', () => bringToFront(win));
+      win.querySelector('[data-act="close"]').addEventListener('click', () => win.remove());
+
+      return win;
+    }
+
+    // ---------- About $444 window ----------
+   function openAbout444() {
+  const content = `
+    <div class="about-444">
+      <div class="pill-logo">
+        <img src="to.png" alt="logo">
+      </div>
+      <div class="headline">In a world full of 4's...</div>
+      <div class="subhead">This is $444</div>
+      <div class="tagline">
+        <em>“Why three 4s?”</em>
+        <span class="blue">Cuz third time’s the charm</span>
+      </div>
+      <div class="ca">CA: ${CONTRACT_ADDRESS}</div>
+
+      <div class="btn-row">
+        <a class="btn95" href="${URL_PUMP}" target="_blank" rel="noopener">Buy on Four.Meme</a>
+        <a class="btn95 btn-small" href="${URL_CHART}" target="_blank" rel="noopener">Twitter</a>
+      </div>
+      <div class="btn-row">
+        
+      </div>
+    </div>
+  `;
+  createWin95Window({
+    title: 'ABOUT $444.EXE',
+    contentHTML: content,
+    x: 220, y: 90,
+    classes: 'window-444'
+  });
+}
+
+// NEW FUNCTION for Narrative
+function openNarrative() {
+  const content = `
+    <div class="narrative">
+      <img src="narra.png" alt="Narrative">
+    </div>
+  `;
+  createWin95Window({
+    title: 'Narrative.txt',
+    contentHTML: content,
+    x: 240, y: 100,
+    classes: 'window-narrative'
+  });
+}
+
+function openGifViewer() {
+  const content = `
+    <div class="gif-view">
+      <div class="gif-title">The Holy GIF</div>
+      <div class="gif-desc">
+        The $444 Gif is a sacred relic, a visual representaion of the coldest nigga breathing, CZ, throwing up his gang sign, the 4.
+      </div>
+      <div class="gif-frame">
+        <video src="gif.mp4" autoplay loop muted playsinline></video>
+      </div>
+    </div>
+  `;
+  createWin95Window({
+    title: 'PFP.gif Viewer',
+    contentHTML: content,
+    x: 260, y: 110,
+    classes: 'window-gif'
+  });
+}
+
+const BUY_URL = "#";  // replace with real link later
+
+document.getElementById('icon-buy')?.addEventListener('click', () => {
+  window.open(BUY_URL, '_blank');   // opens in a new tab
+});
+
+// ----- Start button behavior -----
+document.querySelector('.start-button')?.addEventListener('click', () => {
+  window.location.href = 'index.html';   // navigate to hero page
+});
+
+
+    // Hook up the About icon
+    document.getElementById('icon-about')?.addEventListener('click', openAbout444);
+document.getElementById('icon-narrative')?.addEventListener('click', openNarrative);
+document.getElementById('icon-gif')?.addEventListener('click', openGifViewer);
+
+    // (Placeholders for other icons; we’ll wire later)
+    document.getElementById('icon-narrative')?.addEventListener('click', () => {});
+    document.getElementById('icon-gif')?.addEventListener('click', () => {});
+    document.getElementById('icon-buy')?.addEventListener('click', () => {});
+  </script>
+</body>
+</html>
